@@ -23,21 +23,22 @@ server.get('/api/users', (req, res) => {
 
 
 server.get('/api/users/:id', (req, res) => {
-    users.findById()
+    const { id } = req.params
+    users.findById(id)
         .then(users => {
-            res.status(200).json(db);
+            res.status(200).json(users);
         })
         .catch(error => {
-            res.status(500).json({ message: "The user with the specified ID does not exist." });
+            res.status(404).json({ message: "The user with the specified ID does not exist." });
         });
 });
 
 server.post('/api/users', (req, res) => {
-    const dbInformation = req.body;
+    const users = req.body;
 
-    users.add(dbInformation)
+    users.add(users)
         .then(users => {
-            res.status(201).json(db);
+            res.status(201).json(users);
         })
         .catch(error => {
             res.status(500).json({ errorMessage: "Please provide name and bio for the user." });
@@ -47,8 +48,8 @@ server.post('/api/users', (req, res) => {
 server.delete('/api/users/:id', (req, res) => {
     const dbId = req.params.id;
 
-    db.remove(dbId)
-        .then(db => {
+    users.remove(dbId)
+        .then(users => {
             res.status(200).json({ message: 'database deleted successfully' });
         })
         .catch(error => {
@@ -60,16 +61,16 @@ server.put('/api/users/:id', (req, res) => {
     const { id } = req.params;
     const changes = req.body;
 
-    db.update(id, changes)
+    users.update(id, changes)
         .then(updated => {
             if (updated) {
-                res, status(200).json(updated);
+                res.status(200).json(updated);
             } else {
-                res.status(404).json({ message: 'database not found' });
+                res.status(404).json({ errorMessage: "Please provide name and bio for the user." });
             }
         })
         .catch(error => {
-            res.status(500).json({ message: 'error updating database' });
+            res.status(500).json({ error: "The user information could not be modified." });
         });
 });
 
